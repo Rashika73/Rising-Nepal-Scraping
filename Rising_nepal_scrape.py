@@ -10,10 +10,8 @@ import re
 
 class Page:
     def __init__(self ,path='/home/lazar/Desktop/'): 
-        
-        
         self.path = path
-        self.driver = webdriver.Chrome(executable_path='C:/Users/my pc/chromedriver_win32/chromedriver.exe') #Change this to your ChromeDriver path.
+        self.driver = webdriver.Chrome(executable_path='C:/Users/my pc/chromedriver_win32/chromedriver.exe') 
         self.error = False
         self.main_url = 'http://therisingnepal.org.np'
         self.driver.get(self.main_url)        
@@ -22,14 +20,8 @@ class Page:
         sleep(1)
         self.driver.close()
 
-
-
-
-
-
     def different_category(self,):
         category_no=[5,8,1,2,7]      
-          
         for item in category_no:
             ###To Find the category
             if item==5:
@@ -43,23 +35,14 @@ class Page:
             if item==7:
                 category="Sports"
             self.category=category
-
-            ###browse through various pages
             self.url='http://therisingnepal.org.np/category/'+str(item)
             self.driver.get(self.url)
             sleep(3)
-
-            ###collects all the url link of the respective category
             self.get_page()
             sleep(3)
 
-
-
-
-
-###collects all the url link of the respective category
+'''collects all the url link of the respective category'''
     def get_page(self,):
-
         soup = BeautifulSoup(self.driver.page_source,'lxml')
         urls=[]
         count=0
@@ -80,53 +63,29 @@ class Page:
             sleep(3)
             soup = BeautifulSoup(self.driver.page_source,'lxml')
             
-        self.Find_info(urls)
+        self.find_info(urls)
 
 
-
-
-###Goes to every article and looks for all the required
-    def Find_info(self,urls):
+#Goes to every article and looks for all the required
+    def find_info(self,urls):
         for item in urls:
             self.post=item
             self.driver.get(self.post)
             soup=BeautifulSoup(self.driver.page_source,'lxml')
-
-            ########INFORMATIONS REQUIRED FOR THE DATABASE###############################
-
-            ### For TITLE of the news
-
-            Headline=soup.find('div',class_="panel-heading").text
-
-
-
-
-            ### For the CONTENT of the news
-
+            headline=soup.find('div',class_="panel-heading").text
             contents=soup.find('div',class_="panel-body").find_all('p')
             content=''
             sentences=[]
             for item in contents:
                 content=content+item.text
                 sentences.append(content.split('. '))
-                
-                
-               
-
-            ##############################to find DATE##############################
-            #to find DATE
-            #to find DATE
-
-            ###Two paragraphs are combined as in some articles date is in second paragraph
             if len(contents)>=2:
                 text1=contents[0].text
                 text2=contents[1].text
                 text=text1+text2
             else:
                 text=contents[0].text
-            
-            ###Searching for : or - to find the date ; date is between , and (:|-)
-            
+
             if "—" in text:
                 colonPosition=text.find('—')
             elif ":" in text:
@@ -148,19 +107,7 @@ class Page:
                         break
                     step=step-1
                 step=int(colonPosition)-1
-
-                ###ERROR###
-                #numbers=['0','1','2','3','4','5','6','7','8','9']
-                #while True:                    
-                 #   if step==0:
-                  #      flag=0
-                   #     break
-                    #for item in numbers:
-                     #   if text[step]==item:
-                      #      dateposition=step
-                       #     break
-                    #step=step-1
-
+                
                 while True:                    
                     if step==0:
                         flag=0
@@ -196,34 +143,10 @@ class Page:
                                 
                     else:
                         date_withyear="no date given"
-                    ## To correct some typos in some article ##         
+           
                     date_withyear=date_withyear.replace(".","")
-                    date_withyear=date_withyear.replace("Mar","March")
-                            
-                        
-                print(date_withyear)
-
-                ##########################################END of DATE######################## 
-                
-
-
-
-
-                    #For the CATEGORY OF NEWS, Category is already separated in different_category page                   
-
-
-
-
-                print(self.category)
-
-
-            
+                    date_withyear=date_withyear.replace("Mar","March")  
 
 
 if __name__=='__main__':
     page=Page()
-
-
-
-
-
